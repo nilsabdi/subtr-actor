@@ -2,7 +2,7 @@
 authors = ["Ivan Malison <ivanmalison@gmail.com>"]
 license = "MIT"
 name = "subtr-actor-spec"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 repository = "https://github.com/nilsabdi/subtr-actor"
 keywords = ["rocket-league"]
