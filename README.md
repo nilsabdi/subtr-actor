@@ -85,7 +85,7 @@ context. Note that [`ReplayProcessor`][3] is also used implicitly here in the
 [`Collector::process_replay`][20]
 
 ```rust
-use subtr_actor::*;
+use subtr_actor_spec::*;
 
 fn get_ndarray_with_info_from_replay_filepath(
     filepath: std::path::PathBuf,

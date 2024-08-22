@@ -581,7 +581,7 @@ where
 /// # Example
 ///
 /// ```
-/// use subtr_actor::*;
+/// use subtr_actor_spec::*;
 ///
 /// build_global_feature_adder!(
 ///     SecondsRemainingExample,
@@ -685,7 +685,7 @@ macro_rules! global_feature_adder {
 /// # Example
 ///
 /// ```
-/// use subtr_actor::*;
+/// use subtr_actor_spec::*;
 ///
 /// fn u8_get_f32(v: u8) -> SubtrActorResult<f32> {
 ///    v.try_into().map_err(convert_float_conversion_error)
@@ -833,7 +833,7 @@ macro_rules! convert_all {
 /// # Example
 ///
 /// ```
-/// use subtr_actor::*;
+/// use subtr_actor_spec::*;
 ///
 /// pub fn some_constant_function<F: TryFrom<f32>>(
 ///     rigid_body: &boxcars::RigidBody,

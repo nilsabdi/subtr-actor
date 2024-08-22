@@ -82,7 +82,7 @@
 //! [`Collector::process_replay`]
 //!
 //! ```
-//! use subtr_actor::*;
+//! use subtr_actor_spec::*;
 //!
 //! fn get_ndarray_with_info_from_replay_filepath(
 //!     filepath: std::path::PathBuf,

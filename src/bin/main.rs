@@ -1,5 +1,5 @@
 use boxcars;
-use subtr_actor::*;
+use subtr_actor_spec::*;
 
 use std::env;
 
