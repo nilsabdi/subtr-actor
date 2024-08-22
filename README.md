@@ -67,7 +67,7 @@ fn get_json(filepath: std::path::PathBuf) -> anyhow::Result<String> {
         .must_parse_network_data()
         .on_error_check_crc()
         .parse()?;
-    Ok(subtr_actor::ReplayDataCollector::new()
+    Ok(subtr_actor_spec::ReplayDataCollector::new()
         .get_replay_data(&replay)
         .map_err(|e| e.variant)?
         .as_json()?)
@@ -147,7 +147,7 @@ pub static DEFAULT_PLAYER_FEATURE_ADDERS: [&str; 3] =
 fn build_ndarray_collector(
     global_feature_adders: Option<Vec<String>>,
     player_feature_adders: Option<Vec<String>>,
-) -> subtr_actor::SubtrActorResult<subtr_actor::NDArrayCollector<f32>> {
+) -> subtr_actor_spec::SubtrActorResult<subtr_actor_spec::NDArrayCollector<f32>> {
     let global_feature_adders = global_feature_adders.unwrap_or_else(|| {
         DEFAULT_GLOBAL_FEATURE_ADDERS
             .iter()
@@ -162,7 +162,7 @@ fn build_ndarray_collector(
     });
     let global_feature_adders: Vec<&str> = global_feature_adders.iter().map(|s| &s[..]).collect();
     let player_feature_adders: Vec<&str> = player_feature_adders.iter().map(|s| &s[..]).collect();
-    subtr_actor::NDArrayCollector::<f32>::from_strings(
+    subtr_actor_spec::NDArrayCollector::<f32>::from_strings(
         &global_feature_adders,
         &player_feature_adders,
     )
