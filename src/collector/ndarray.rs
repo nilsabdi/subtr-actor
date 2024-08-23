@@ -3,6 +3,7 @@ use ::ndarray;
 use boxcars;
 pub use derive_new;
 use lazy_static::lazy_static;
+use ndarray::Axis;
 pub use paste;
 use serde::Serialize;
 use std::sync::Arc;
@@ -164,6 +165,60 @@ impl<F> NDArrayCollector<F> {
         self.get_meta_and_ndarray().map(|a| a.1)
     }
 
+    pub fn get_shots_and_array(&self,
+        data: &[u8],
+    ) -> SubtrActorResult<(Vec<ShotMetadata>, Vec<Vec<f32>>, Vec<String>)> {
+        
+        let parsing = boxcars::ParserBuilder::new(&data[..])
+            .always_check_crc()
+            .must_parse_network_data()
+            .parse();
+        
+        let replay = parsing.unwrap();
+
+        let mut collector = NDArrayCollector::<f32>::from_strings(
+            &["InterpolatedBallRigidBodyNoVelocities"],
+            &[
+                "InterpolatedPlayerRigidBodyNoVelocities",
+                "PlayerBoost",
+                "PlayerAnyJump",
+                "PlayerDemolishedBy",
+            ],
+        )
+        .unwrap();
+
+        let mut collector2 = NDArrayCollector::<f32>::from_strings(
+            &["InterpolatedBallRigidBodyNoVelocities"],
+            &[
+                "InterpolatedPlayerRigidBodyNoVelocities",
+                "PlayerBoost",
+                "PlayerAnyJump",
+                "PlayerDemolishedBy",
+            ],
+        )
+        .unwrap();
+
+        FrameRateDecorator::new_from_fps(10.0, &mut collector)
+        .process_replay(&replay)
+        .unwrap();
+
+        let (meta, array) = collector.get_meta_and_ndarray().unwrap();
+        
+        let result = collector2.process_and_get_meta_and_headers(&replay).unwrap();
+
+        // Extract the shots metadata
+        let shots = result.replay_meta.shots.clone();  
+        let json_array: Vec<Vec<f32>> = array
+        .axis_iter(Axis(0))
+        .map(|row| row.to_vec())
+        .collect();
+
+
+        
+        Ok((shots, json_array, meta.headers_vec()))
+    }
+    
+
     /// Consumes the [`NDArrayCollector`] and returns the collected features as a
     /// 2D ndarray, along with replay metadata and headers.
     ///
@@ -212,7 +267,7 @@ impl<F> NDArrayCollector<F> {
         &mut self,
         replay: &boxcars::Replay,
     ) -> SubtrActorResult<ReplayMetaWithHeaders> {
-        let mut processor = ReplayProcessor::new(replay)?;
+        let mut processor: ReplayProcessor = ReplayProcessor::new(replay)?;
         processor.process_long_enough_to_get_actor_ids()?;
         self.maybe_set_replay_meta(&processor)?;
         Ok(ReplayMetaWithHeaders {

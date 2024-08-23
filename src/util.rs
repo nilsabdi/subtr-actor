@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use boxcars::{HeaderProp, RemoteId};
 use serde::Serialize;
 
@@ -39,6 +41,7 @@ pub struct DemolishInfo {
 /// This includes information about the players in the match and all replay headers.
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct ReplayMeta {
+    pub shots: Vec<ShotMetadata>,
     /// A vector of [`PlayerInfo`] instances representing the players on team zero.
     pub team_zero: Vec<PlayerInfo>,
     /// A vector of [`PlayerInfo`] instances representing the players on team one.
@@ -58,6 +61,17 @@ impl ReplayMeta {
     pub fn player_order(&self) -> impl Iterator<Item = &PlayerInfo> {
         self.team_zero.iter().chain(self.team_one.iter())
     }
+}
+
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct ShotMetadata {
+    pub shooter: String,
+    pub frame: usize,
+    pub ball_position: (f32, f32, f32),
+    pub ball_linear_velocity: (f32, f32, f32),
+    pub ball_angular_velocity: (f32, f32, f32),
+    pub player_positions: HashMap<String, (f32, f32, f32)>,
 }
 
 /// [`PlayerInfo`] struct provides detailed information about a specific player in the replay.
