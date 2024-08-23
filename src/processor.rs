@@ -252,7 +252,7 @@ impl<'a> ReplayProcessor<'a> {
             self.update_ball_id(frame)?;
             self.update_boost_amounts(frame, index)?;
             self.update_demolishes(frame, index)?;
-            self.process_frame_for_shot( frame, index)?;
+            // self.process_frame_for_shot( frame, index)?;
 
             // Get the time to process for this frame. If target_time is set to
             // NextFrame, we use the time of the current frame.
@@ -389,92 +389,92 @@ impl<'a> ReplayProcessor<'a> {
     }
 
     /// Processes a single frame to determine if it contains a shot on goal.
-    fn process_frame_for_shot(
-        &mut self,
-        frame: &boxcars::Frame,
-        frame_index: usize,
-    ) -> SubtrActorResult<Option<ShotMetadata>> {
-        if let Some(ball_rigid_body) = self.get_ball_rigid_body().ok() {
-            // Get the ball's position and velocities
-            let ball_position = (
-                ball_rigid_body.location.x,
-                ball_rigid_body.location.y,
-                ball_rigid_body.location.z,
-            );
-            let ball_linear_velocity = match ball_rigid_body.linear_velocity {
-                Some(v) => (v.x, v.y, v.z),
-                None => (0.0, 0.0, 0.0),
-            };
-            let ball_angular_velocity = match ball_rigid_body.angular_velocity {
-                Some(v) => (v.x, v.y, v.z),
-                None => (0.0, 0.0, 0.0),
-            };
-
-            println!(
-                "Frame {}: Ball position: {:?}, velocity: {:?}",
-                frame_index, ball_position, ball_linear_velocity
-            );
-
-            // Detect if the ball is heading towards the opponent's goal
-            if ball_linear_velocity.1 > 0.0 && ball_position.1 > 0.0 {
-                // Collect player positions
-                let mut player_positions = HashMap::new();
-                for player_id in self.iter_player_ids_in_order() {
-                    if let Ok(player_rigid_body) = self.get_player_rigid_body(player_id) {
-                        let position = (
-                            player_rigid_body.location.x,
-                            player_rigid_body.location.y,
-                            player_rigid_body.location.z,
-                        );
-                        let player_name = self.get_player_name(player_id)?;
-                        player_positions.insert(player_name, position);
-                    }
-                }
-
-                // Identify the shooter (e.g., last player to touch the ball)
-                let shooter = "Unknown".to_string(); // Replace this with your logic to identify the shooter.
-
-                // Create the ShotMetadata instance
-                let shot = ShotMetadata {
-                    shooter,
-                    frame: frame_index,
-                    ball_position,
-                    ball_linear_velocity,
-                    ball_angular_velocity,
-                    player_positions,
-                };
-
-                // Push the shot into the shots vector
-                self.shots.push(shot.clone());
-
-                // Return the shot metadata
-                return Ok(Some(shot));
-            }
-        }
-
-        Ok(None) // No shot detected in this frame
-    }
-
-
-
-    // fn build_shots_info(
+    // fn process_frame_for_shot(
     //     &self,
-    //     shots: Vec<ShotMetadata>,
     //     frame: &boxcars::Frame,
-    //     index: usize,
-    // ) -> SubtrActorResult<DemolishInfo> {
-    //     let attacker = self.get_player_id_from_car_id(&demolish_fx.attacker)?;
-    //     let victim = self.get_player_id_from_car_id(&demolish_fx.victim)?;
-    //     Ok(DemolishInfo {
-    //         time: frame.time,
-    //         seconds_remaining: self.get_seconds_remaining()?,
-    //         frame: index,
-    //         attacker,
-    //         victim,
-    //         attacker_velocity: demolish_fx.attack_velocity.clone(),
-    //         victim_velocity: demolish_fx.victim_velocity.clone(),
-    //     })
+    //     frame_index: usize,
+    // ) -> SubtrActorResult<Option<ShotMetadata>> {
+    //     if let Some(ball_rigid_body) = self.get_ball_rigid_body().ok() {
+    //         // Get the ball's position and velocities
+    //         let ball_position = (
+    //             ball_rigid_body.location.x,
+    //             ball_rigid_body.location.y,
+    //             ball_rigid_body.location.z,
+    //         );
+    //         let ball_linear_velocity = match ball_rigid_body.linear_velocity {
+    //             Some(v) => (v.x, v.y, v.z),
+    //             None => (0.0, 0.0, 0.0),
+    //         };
+    //         let ball_angular_velocity = match ball_rigid_body.angular_velocity {
+    //             Some(v) => (v.x, v.y, v.z),
+    //             None => (0.0, 0.0, 0.0),
+    //         };
+
+    //         println!(
+    //             "Frame {}: Ball position: {:?}, velocity: {:?}",
+    //             frame_index, ball_position, ball_linear_velocity
+    //         );
+
+    //         // Detect if the ball is heading towards the opponent's goal
+    //         if ball_linear_velocity.1 > 0.0 && ball_position.1 > 0.0 {
+    //             // Collect player positions
+    //             let mut player_positions = HashMap::new();
+    //             for player_id in self.iter_player_ids_in_order() {
+    //                 if let Ok(player_rigid_body) = self.get_player_rigid_body(player_id) {
+    //                     let position = (
+    //                         player_rigid_body.location.x,
+    //                         player_rigid_body.location.y,
+    //                         player_rigid_body.location.z,
+    //                     );
+    //                     let player_name = self.get_player_name(player_id)?;
+    //                     player_positions.insert(player_name, position);
+    //                 }
+    //             }
+
+    //             // Identify the shooter (e.g., last player to touch the ball)
+    //             let shooter = "Unknown".to_string(); // Replace this with your logic to identify the shooter.
+
+    //             // Create the ShotMetadata instance
+    //             let shot = ShotMetadata {
+    //                 shooter,
+    //                 frame: frame_index,
+    //                 ball_position,
+    //                 ball_linear_velocity,
+    //                 ball_angular_velocity,
+    //                 player_positions,
+    //             };
+
+    //             // Push the shot into the shots vector
+    //             self.shots.push(shot.clone());
+
+    //             // Return the shot metadata
+    //             return Ok(Some(shot));
+    //         }
+    //     }
+
+    //     Ok(None) // No shot detected in this frame
     // }
+
+
+
+    fn build_shots_info(
+        &self,
+        demolish_fx: &boxcars::DemolishFx,
+        frame: &boxcars::Frame,
+        index: usize,
+    ) -> SubtrActorResult<DemolishInfo> {
+        let attacker = self.get_player_id_from_car_id(&demolish_fx.attacker)?;
+        let victim = self.get_player_id_from_car_id(&demolish_fx.victim)?;
+        Ok(DemolishInfo {
+            time: frame.time,
+            seconds_remaining: self.get_seconds_remaining()?,
+            frame: index,
+            attacker,
+            victim,
+            attacker_velocity: demolish_fx.attack_velocity.clone(),
+            victim_velocity: demolish_fx.victim_velocity.clone(),
+        })
+    }
 
     /// Processes the replay enough to get the actor IDs and then retrieves the replay metadata.
     ///
